@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 '''
 import numpy as np
 import sys
-sys.path.remove('/opt/ros/kinetic/lib/python2.7/dist-packages')
+# sys.path.remove('/opt/ros/kinetic/lib/python2.7/dist-packages')
 import cv2
 import struct
 
@@ -45,9 +45,9 @@ class map_maker():
         cv2.line(self.basic_field, (b, b), (b, ph+b), 255, self.linethickness)
         cv2.line(self.basic_field, (pw+b, b), (pw+b, ph+b), 255, self.linethickness)
         # 추가 마크 작업
-        #cv2.circle(self.basic_field, (pw//2+b, ph//2+b), 10, 255, -1)
-        #cv2.circle(self.basic_field, (pw//2-b, ph//2+b), 7, 255, -1)
-        #cv2.circle(self.basic_field, (pw//2+3*b, ph//2+b), 7, 255, -1)
+        cv2.circle(self.basic_field, (pw//2+b, ph//2+b), 10, 255, -1)
+        cv2.circle(self.basic_field, (pw//2-b, ph//2+b), 7, 255, -1)
+        cv2.circle(self.basic_field, (pw//2+3*b, ph//2+b), 7, 255, -1)
 
     def make_unity_field(self):
         # BGR채널 순서로 관리
