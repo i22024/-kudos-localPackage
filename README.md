@@ -17,4 +17,6 @@
 - 시뮬레이터를 작동시키기 위해서 python3가 필수이다. 이걸로 ros업데이트
 - 시뮬레이터는 -kudos-vision_simulator를 이용하면 된다. 관리의 편의성을 위해 시뮬레이터는 이것만 건들 예정
 
+- 만약 pyqt와 opencv가 충돌한다면 opencv에서 headless 버전으로 깔아줄 필요가 있다. pip3 install python-opencv-headless
+
     
