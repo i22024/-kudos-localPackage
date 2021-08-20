@@ -1,9 +1,9 @@
 import struct
 import numpy as np
 import matplotlib
-matplotlib.use('TkAgg')
+#matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
-path = "./bh_play_ground/python_dump_data/bh_dist.bin"
+path = "./bh_play_ground/python_dump_data/dist.bin"
 binary_list = []
 len_of_data = 880000
 with open(path, "rb") as f:

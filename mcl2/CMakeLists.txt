@@ -6,21 +6,12 @@ add_compile_options(-std=c++11)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTOUIC ON)
+# set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC_SEARCH_PATHS ui/)
-# set(Qt5_DIR "/opt/qt59/lib/cmake/Qt5")
-# set(OpenCV_DIR "/usr/local/share/OpenCV")
-
-# if there is problem, please use this! reset qt5 path!
-# set(CMAKE_INCLUDE_CURRENT_DIR ON)
-# set(CMAKE_AUTOMOC ON)
-# # set(CMAKE_AUTOUIC ON)
-# set(CMAKE_AUTORCC ON)
-# set(CMAKE_AUTOUIC_SEARCH_PATHS ui/)
-# set(Qt5_DIR "/usr/lib/aarch64-linux-gnu/cmake/Qt5")
-# # set(OpenCV_DIR "/usr/local/share/OpenCV")
-
+#set(Qt5_DIR "/usr/lib/aarch64-linux-gnu/cmake/qt5")
+set(Qt5_DIR "/usr/lib/x86_64-linux-gnu/cmake/Qt5")
+#set(OpenCV_DIR "/usr/local/share/OpenCV")
 
 find_package(Qt5 REQUIRED COMPONENTS Core Gui Widgets)
 find_package(OpenCV REQUIRED)

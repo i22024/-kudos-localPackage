@@ -407,10 +407,10 @@ void MCL::LineScanning()
             cv::circle(alpha, cv::Point(point_x, point_y), 10, cv::Scalar(255));
             cv::circle(alpha, cv::Point((CENTERX + robot_pos.x), (CENTERY - robot_pos.y)), 2, cv::Scalar(255));
           }
-          linePoints.push_back(QPointF(point_x, point_y));
-          linePoints_.push_back(std::make_pair(point_x, point_y));  
+          //linePoints.push_back(QPointF(point_x, point_y));
+          //linePoints_.push_back(std::make_pair(point_x, point_y));  
         }
-      /*for(int i=0; i<100; i++)
+      for(int i=0; i<100; i++)
       {
         bool Is_valid_data = true;
         if(sensor_data_x[i] == -100 && sensor_data_y[i] == -100)
@@ -420,7 +420,7 @@ void MCL::LineScanning()
           linePoints.push_back(QPointF(sensor_data_x[i], sensor_data_y[i]));
           linePoints_.push_back(std::make_pair(sensor_data_x[i], sensor_data_y[i]));
         }
-      }*/
+      }
     }
     emit publishPoints(linePoints);
   }

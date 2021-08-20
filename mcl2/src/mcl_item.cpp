@@ -18,7 +18,7 @@ void RobotItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
   double c = cos(robot_state.second * M_PI/180);
   double s = sin(robot_state.second * M_PI/180);
 
-  painter->setPen(Qt::red);
+  painter->setPen(Qt::white);
   if(linePoints.size()>0)
     for(auto d: linePoints)
     {
@@ -128,7 +128,7 @@ void MCLItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, Q
 
   }
 
-  painter->setBrush(Qt::black);
+  painter->setBrush(Qt::white);
   QRectF bel(-10, -10, 20, 20);
   double x_ = std::get<0>(belief);
   double y_ = std::get<1>(belief);
@@ -142,7 +142,7 @@ void MCLItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, Q
   bel.translate(x_, y_);
   painter->drawEllipse(bel);
 
-  painter->setPen(Qt::red);
+  painter->setPen(Qt::white);
   if(linePoints.size()>0)
     for(auto d: linePoints)
     {
@@ -156,7 +156,7 @@ void MCLItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, Q
 
   if(obsPnts.size()>0)
   {
-      painter->setBrush(Qt::darkGray);
+      painter->setBrush(Qt::white);
       for(auto pt: obsPnts)
       {
           painter->drawEllipse(QPointF(pt), 10,10);

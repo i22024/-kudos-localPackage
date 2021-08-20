@@ -1,0 +1,16 @@
+CMakeCache.txt
+CMakeLists.txt.*
+CMakeLists.txt.user.*
+CMakeFiles/
+CMakeScripts
+Makefile
+cmake_install.cmake
+*.mp4
+*.cbp
+
+moc_*.cpp
+*_automoc.cpp
+./monte-carlo-localization
+./*
+
+
