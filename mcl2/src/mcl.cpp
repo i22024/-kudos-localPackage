@@ -86,8 +86,8 @@ void MCL::callbackThread()
 {
   ros::NodeHandle nh(ros::this_node::getName());
   printf("노드를 선언한다!!\n");
-  mcl2_subs = nh.subscribe("/soccer_simu_sensor_data", 1, &MCL::submitCallback, this);
-  mcl2_pub = nh.advertise<mcl2::mcl2_local_result>("/soccer_simu_local_result", 1);
+  mcl2_subs = nh.subscribe("/kudos_vision_local_sensor_data", 1, &MCL::submitCallback, this);
+  mcl2_pub = nh.advertise<mcl2::kudos_vision_mcl2_local_result>("/kudos_vision_mcl2_local_result", 1);
   while (nh.ok())
   {
     ros::spinOnce();
@@ -95,19 +95,15 @@ void MCL::callbackThread()
   }
 }
 
-void MCL::submitCallback(const mcl2::mcl2_sensor_data::ConstPtr& msg)
+void MCL::submitCallback(const mcl2::kudos_vision_local_sensor_data::ConstPtr& msg)
 {
   int debug_num = msg->debug_num;
-  printf("submitCallback::debug_num%d\n", debug_num);
   for(int i=0; i<100; i++)
   {
     sensor_data_x[i] = msg->sensor_data_x[i];
     sensor_data_y[i] = msg->sensor_data_y[i];
   }
-  printf("first sensor data:(%d, %d)", sensor_data_x[0], sensor_data_y[0]);
-  //mcl2::mcl2_local_result message;
-  //message.debug_num = debug_num + 1;
-  //mcl2_pub.publish(message);
+  op3_local_mode = msg->op3_local_mode;
 }
 
 
@@ -389,7 +385,7 @@ void MCL::LineScanning()
       double slope = double(second.y - first.y) / double(second.x - first.x);
       if(slope == -INFINITY || slope > 200)
         continue;
-
+      /*
       for(int i = 0; i < it.count; i++, ++it)
         if(field.at<uchar>(it.pos()) == 255)
         {
@@ -410,15 +406,19 @@ void MCL::LineScanning()
           //linePoints.push_back(QPointF(point_x, point_y));
           //linePoints_.push_back(std::make_pair(point_x, point_y));  
         }
-      for(int i=0; i<100; i++)
+      */
+      if(op3_local_mode == true)
       {
-        bool Is_valid_data = true;
-        if(sensor_data_x[i] == -100 && sensor_data_y[i] == -100)
-          Is_valid_data = false;
-        if(Is_valid_data == true)
+        for(int i=0; i<100; i++)
         {
-          linePoints.push_back(QPointF(sensor_data_x[i], sensor_data_y[i]));
-          linePoints_.push_back(std::make_pair(sensor_data_x[i], sensor_data_y[i]));
+          bool Is_valid_data = true;
+          if(sensor_data_x[i] == -100 && sensor_data_y[i] == -100)
+            Is_valid_data = false;
+          if(Is_valid_data == true)
+          {
+            linePoints.push_back(QPointF(sensor_data_x[i], sensor_data_y[i]));
+            linePoints_.push_back(std::make_pair(sensor_data_x[i], sensor_data_y[i]));
+          }
         }
       }
     }
@@ -821,6 +821,20 @@ void MCL::lowVarResampling()
   mean_y /= N_Particle;
   orien = atan2(sin_,cos_)*180/M_PI;
 
+  ///////////////////////////////////////////////////////////////////////////////////////////SP Point!
+  local_result_x = mean_x;
+  local_result_y = mean_y;
+  local_result_orien = orien;
+
+  if(op3_local_mode == true)
+  {
+    mcl2::kudos_vision_mcl2_local_result message;
+    message.local_result_x = local_result_x;
+    message.local_result_y = local_result_y;
+    message.local_result_orien = local_result_orien;
+    mcl2_pub.publish(message);
+  }
+  
   x(mean_estimate) = mean_x;
   y(mean_estimate) = mean_y;
   w(mean_estimate) = orien;

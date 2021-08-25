@@ -72,8 +72,8 @@ target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBRARIES} ${YAML_CPP_LIBRARIES}
 
 add_message_files(
     FILES
-    mcl2_local_result.msg
-    mcl2_sensor_data.msg
+    kudos_vision_local_sensor_data.msg
+    kudos_vision_mcl2_local_result.msg
   )
 
 generate_messages(

@@ -21,8 +21,8 @@
 #include <ros/ros.h>
 #include <std_msgs/String.h>
 #include <boost/thread.hpp>
-#include <mcl2/mcl2_sensor_data.h>
-#include <mcl2/mcl2_local_result.h>
+#include <mcl2/kudos_vision_local_sensor_data.h>
+#include <mcl2/kudos_vision_mcl2_local_result.h>
 
 
 class MCL : public QObject
@@ -36,7 +36,7 @@ public:
     void setScanArea(std::vector<cv::Point> &scanArea) {this->scanArea = scanArea;}
     double heading_err(double angle); // calculate heading error weighting
     void callbackThread();
-    void submitCallback(const mcl2::mcl2_sensor_data::ConstPtr& msg);
+    void submitCallback(const mcl2::kudos_vision_local_sensor_data::ConstPtr& msg);
 
     struct FieldMatrix;
 
@@ -58,7 +58,11 @@ public:
     ros::Publisher mcl2_pub;
 
     int sensor_data_x[100];
-    int sensor_data_y[100]; 
+    int sensor_data_y[100];
+    bool op3_local_mode;
+    double local_result_x;
+    double local_result_y;
+    double local_result_orien;
 
 public slots:
     void updateOdometry(double x, double y, double deg); //get new odometry data
