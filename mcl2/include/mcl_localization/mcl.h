@@ -63,6 +63,9 @@ public:
     double local_result_x;
     double local_result_y;
     double local_result_orien;
+    double start_point_x;
+    double start_point_y;
+    double start_point_orien;
 
 public slots:
     void updateOdometry(double x, double y, double deg); //get new odometry data

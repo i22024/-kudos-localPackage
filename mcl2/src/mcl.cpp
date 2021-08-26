@@ -104,6 +104,32 @@ void MCL::submitCallback(const mcl2::kudos_vision_local_sensor_data::ConstPtr& m
     sensor_data_y[i] = msg->sensor_data_y[i];
   }
   op3_local_mode = msg->op3_local_mode;
+  int s_x = msg->start_point_x;
+  int s_y = msg->start_point_y;
+  int s_o = msg->start_point_orien;
+  if(op3_local_mode == true)
+  {
+    if(start_point_x != s_x || start_point_y != s_y || start_point_orien != s_o)
+    {
+      start_point_x = s_x;
+      start_point_y = s_y;
+      start_point_orien = s_o;
+      mcl_wslow = 0;
+      mcl_wfast = 0;
+      N_Particle = NDEF_Particle;
+      Particles new_list;
+      for(int j = 0; j < N_Particle; j++)
+      {
+        reset_particle = false;
+        new_list.push_back(std::make_tuple(start_point_x, start_point_y, start_point_orien, 1/N_Particle));
+      }
+      particles = new_list;
+      x(mean_estimate) = start_point_x;
+      y(mean_estimate) = start_point_y;
+      w(mean_estimate) = start_point_orien;
+      publishParticles(particles, mean());
+    }
+  }
 }
 
 
@@ -407,24 +433,21 @@ void MCL::LineScanning()
           //linePoints_.push_back(std::make_pair(point_x, point_y));  
         }
       */
-      if(op3_local_mode == true)
+      for(int i=0; i<100; i++)
       {
-        for(int i=0; i<100; i++)
+        bool Is_valid_data = true;
+        if(sensor_data_x[i] == -100 && sensor_data_y[i] == -100)
+          Is_valid_data = false;
+        if(Is_valid_data == true)
         {
-          bool Is_valid_data = true;
-          if(sensor_data_x[i] == -100 && sensor_data_y[i] == -100)
-            Is_valid_data = false;
-          if(Is_valid_data == true)
-          {
-            linePoints.push_back(QPointF(sensor_data_x[i], sensor_data_y[i]));
-            linePoints_.push_back(std::make_pair(sensor_data_x[i], sensor_data_y[i]));
-          }
+          linePoints.push_back(QPointF(sensor_data_x[i], sensor_data_y[i]));
+          linePoints_.push_back(std::make_pair(sensor_data_x[i], sensor_data_y[i]));
         }
       }
     }
     emit publishPoints(linePoints);
   }
-
+  /*
   else
   {
     /// Find field lines segment in the fov
@@ -471,6 +494,7 @@ void MCL::LineScanning()
 
     emit publishLines(fieldLines);
   }
+  */
 
   if(vision_debug && field_lines)
   {
@@ -570,7 +594,7 @@ void MCL::updatePerceptionPoints(std::vector<SensorData> linePoints)
 
     else
     {
-      reset_particle = true;
+      reset_particle = false;//bh: 원래 true였는데 false로 바꿈 
     }
 
   }
@@ -865,7 +889,6 @@ void MCL::lowVarResampling()
   }
 
   publishParticles(particles, mean());
-
 }
 
 /**
