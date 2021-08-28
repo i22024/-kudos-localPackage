@@ -1,0 +1,4 @@
+int16 debug_num
+float32 local_result_x
+float32 local_result_y
+float32 local_result_orien

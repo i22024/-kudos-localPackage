@@ -1,0 +1,4 @@
+bool op3_local_mode
+int16 start_point_x
+int16 start_point_y
+int16 start_point_orien

@@ -66,6 +66,9 @@ public:
     double start_point_x;
     double start_point_y;
     double start_point_orien;
+    double diff_limit_wslow_wfast;
+    double custom_local_range_distance;
+    double custom_local_range_orien;
 
 public slots:
     void updateOdometry(double x, double y, double deg); //get new odometry data
