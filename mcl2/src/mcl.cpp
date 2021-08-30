@@ -827,26 +827,7 @@ void MCL::lowVarResampling()
       reset_particle = false;
       if(((mcl_wslow/mcl_wfast) < diff_limit_wslow_wfast) && mcl_wslow>mcl_wfast)
       {
-        double x_min = local_result_x - ((mcl_wslow/mcl_wfast)*custom_local_range_distance);
-        double x_max = local_result_x + ((mcl_wslow/mcl_wfast)*custom_local_range_distance);
-        double y_min = local_result_y - ((mcl_wslow/mcl_wfast)*custom_local_range_distance);
-        double y_max = local_result_y + ((mcl_wslow/mcl_wfast)*custom_local_range_distance);
-        double orien_min = local_result_orien - ((mcl_wslow/mcl_wfast)*custom_local_range_orien);
-        double orien_max = local_result_orien + ((mcl_wslow/mcl_wfast)*custom_local_range_orien);
-        if(x_min < -450)
-          x_min = -450.0;
-        if(x_max > 450)
-          x_max = 450.0;
-        if(y_min<-300)
-         y_min = -300.0;
-        if(y_max>300)
-          y_max = 300.0;
-        if(orien_min<-180)
-          orien_min = -180;
-        if(orien_max>180)
-          orien_max = 180;
-        std::uniform_real_distribution<double> cus_xrg(x_min,x_max), cus_yrg(y_min,y_max), cus_wrg(orien_min,orien_max);
-        new_list.push_back(std::make_tuple(cus_xrg(x_rd), cus_yrg(y_rd), cus_wrg(w_rd), 1/N_Particle));
+        new_list = get_normal_distributution_particle_location_bh(local_result_x, local_result_y, local_result_orien, new_list)
       }
       else
       {
@@ -942,6 +923,33 @@ void MCL::lowVarResampling()
 
   publishParticles(particles, mean());
 }
+
+Particles MCL::get_normal_distributution_particle_location_bh(double mean_x, double mean_y, double mean_orien, Particles new_list)
+{
+  double x_min = local_result_x - ((mcl_wslow/mcl_wfast)*custom_local_range_distance);
+  double x_max = local_result_x + ((mcl_wslow/mcl_wfast)*custom_local_range_distance);
+  double y_min = local_result_y - ((mcl_wslow/mcl_wfast)*custom_local_range_distance);
+  double y_max = local_result_y + ((mcl_wslow/mcl_wfast)*custom_local_range_distance);
+  double orien_min = local_result_orien - ((mcl_wslow/mcl_wfast)*custom_local_range_orien);
+  double orien_max = local_result_orien + ((mcl_wslow/mcl_wfast)*custom_local_range_orien);
+  if(x_min < -450)
+    x_min = -450.0;
+  if(x_max > 450)
+    x_max = 450.0;
+  if(y_min<-300)
+    y_min = -300.0;
+  if(y_max>300)
+    y_max = 300.0;
+  if(orien_min<-180)
+    orien_min = -180;
+  if(orien_max>180)
+    orien_max = 180;
+  std::uniform_real_distribution<double> cus_xrg(x_min,x_max), cus_yrg(y_min,y_max), cus_wrg(orien_min,orien_max);
+  new_list.push_back(std::make_tuple(cus_xrg(x_rd), cus_yrg(y_rd), cus_wrg(w_rd), 1/N_Particle));
+
+  return new_list
+}
+
 
 /**
  * @brief MCL::FieldMatrix::FieldMatrix initialize the Euclidean's Look Up Table
