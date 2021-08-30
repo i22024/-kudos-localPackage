@@ -125,7 +125,7 @@ MainWindow::Field::Field()
 void MainWindow::Field::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     QImage image;
-    image.load("/home/nvidia/catkin_ws/src/mcl2/data/mcl_field.png", "PNG");
+    image.load("/home/soya/catkin_ws/src/mcl2/data/mcl_field.png", "PNG");
     painter->drawImage(-550,-400,image);
 
     /*

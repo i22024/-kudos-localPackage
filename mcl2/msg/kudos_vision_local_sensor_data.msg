@@ -8,8 +8,5 @@ float32 diff_limit_wslow_wfast
 int16 start_point_x
 int16 start_point_y
 int16 start_point_orien
-float32[100] start_point_x_list
-float32[100] start_point_y_list
-float32[100] start_point_orien_list
 
 

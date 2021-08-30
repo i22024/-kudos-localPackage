@@ -95,7 +95,6 @@ private:
     void lowVarResampling(); // resampling method
     void LineScanning(); //field points scanning from given sets of lines
     void saveConfig();
-    void get_normal_distributution_particle_location_bh(double mean_x, double mean_y, double mean_orien, Particles new_list);
 
     cv::Point closestPointinLine(LineSegment &l, cv::Point p, bool cut);
     double angle2Points(cv::Point A, cv::Point B);

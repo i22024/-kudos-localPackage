@@ -119,18 +119,16 @@ void MCL::submitCallback(const mcl2::kudos_vision_local_sensor_data::ConstPtr& m
       start_point_x = s_x;
       start_point_y = s_y;
       start_point_orien = s_o;
+      local_result_x = s_x;
+      local_result_y = s_y;
+      local_result_orien = s_o;
       mcl_wslow = 0.7;
       mcl_wfast = 0.7;
       N_Particle = NDEF_Particle;
       Particles new_list;
       for(int j = 0; j < N_Particle; j++)
       {
-        reset_particle = false;
-        float tmp_point_x = (msg->start_point_x_list)[j];
-        float tmp_point_y = (msg->start_point_y_list)[j];
-        float tmp_point_orien = (msg->start_point_orien_list)[j];
-        printf("(%lf %lf %lf)\n", tmp_point_x, tmp_point_y, tmp_point_orien);
-        new_list.push_back(std::make_tuple(tmp_point_x, tmp_point_y, tmp_point_orien, 1/N_Particle));
+        new_list.push_back(std::make_tuple(s_x, s_y, s_o, 1/N_Particle));
       }
       particles = new_list;
       x(mean_estimate) = start_point_x;
@@ -303,7 +301,7 @@ void MCL::setMCLParam(QVector<double> param)
  */
 void MCL::resetMCL(bool status)
 {
-
+  /*
   std::random_device xrd, yrd, wrd;
   std::uniform_real_distribution<double> xrg(-450,450), yrg(-300,300), wrg(0,360);
   for(auto& p : particles)
@@ -312,7 +310,7 @@ void MCL::resetMCL(bool status)
     y(p) = yrg(yrd);
     w(p) = wrg(wrd);
   }
-
+  */
 }
 
 /**
@@ -622,8 +620,8 @@ void MCL::updatePerceptionPoints(std::vector<SensorData> linePoints)
   /// Augmented MCL variables
   mcl_wslow += mcl_aslow*(w_avg - mcl_wslow);
   mcl_wfast += mcl_afast*(w_avg - mcl_wfast);
-  printf("mcl_aslow: %lf, mcl_afast: %lf\n", mcl_aslow, mcl_afast);
-  printf("w_avg: %lf, mcl_wslow: %lf, mcl_wfast: %lf\n", w_avg, mcl_wslow, mcl_wfast);
+  //printf("mcl_aslow: %lf, mcl_afast: %lf\n", mcl_aslow, mcl_afast);
+  //printf("w_avg: %lf, mcl_wslow: %lf, mcl_wfast: %lf\n", w_avg, mcl_wslow, mcl_wfast);
 
   lowVarResampling();
 
@@ -795,8 +793,9 @@ void MCL::lowVarResampling()
   Particles new_list;
   std::default_random_engine rd;
   std::mt19937 gen(rd());
-  std::random_device x_rd, y_rd, w_rd;
-  std::uniform_real_distribution<double> rg(0.0,1.0/N_Particle), xrg(-450,450), yrg(-300,300), wrg(0,359);
+  std::random_device x_rd, y_rd, w_rd, bh_local_distance_rd, bh_local_orien_rd, bh_world_orien_rd;
+  std::uniform_real_distribution<double> rg(0.0,1.0/N_Particle), xrg(-450,450), yrg(-300,300), wrg(-180,180);
+  std::normal_distribution<double> random_local_xys(/* 평균 = */ 0, /* 표준 편차 = */custom_local_range_distance), random_local_oriens(/* 평균 = */ 0, /* 표준 편차 = */ custom_local_range_orien);
   double reset_prob = std::max(0.0, 1-(mcl_wfast/mcl_wslow));
   double r = rg(rd);
   double c = weight(particles[0]);
@@ -827,7 +826,22 @@ void MCL::lowVarResampling()
       reset_particle = false;
       if(((mcl_wslow/mcl_wfast) < diff_limit_wslow_wfast) && mcl_wslow>mcl_wfast)
       {
-        new_list = get_normal_distributution_particle_location_bh(local_result_x, local_result_y, local_result_orien, new_list)
+        double random_local_xy = random_local_xys(bh_local_distance_rd);
+        double random_local_orien = random_local_oriens(bh_local_orien_rd);
+        double random_world_orien = wrg(bh_world_orien_rd);
+        //printf("웓드 회전 좌표: %lf\n", random_world_orien);
+
+        random_world_orien = random_world_orien/180.0*3.141592;
+        random_local_xy = random_local_xy*(mcl_wslow/mcl_wfast);
+        random_local_orien = random_local_orien*(mcl_wslow/mcl_wfast);
+        double bh_particle_x = local_result_x + cos(random_world_orien)*random_local_xy;
+        double bh_particle_y = local_result_y + sin(random_world_orien)*random_local_xy;
+        double bh_particle_orien = local_result_orien + random_local_orien;
+        if(bh_particle_x > 450 || bh_particle_x < -450)
+          bh_particle_x = local_result_x;
+        if(bh_particle_y > 300 || bh_particle_y < -300)
+          bh_particle_y = local_result_y;
+        new_list.push_back(std::make_tuple(bh_particle_x, bh_particle_y, bh_particle_orien, 1/N_Particle));
       }
       else
       {
@@ -920,34 +934,7 @@ void MCL::lowVarResampling()
     emit publishObsPnts(obsPnts);
     obsPnts.clear();
   }
-
   publishParticles(particles, mean());
-}
-
-Particles MCL::get_normal_distributution_particle_location_bh(double mean_x, double mean_y, double mean_orien, Particles new_list)
-{
-  double x_min = local_result_x - ((mcl_wslow/mcl_wfast)*custom_local_range_distance);
-  double x_max = local_result_x + ((mcl_wslow/mcl_wfast)*custom_local_range_distance);
-  double y_min = local_result_y - ((mcl_wslow/mcl_wfast)*custom_local_range_distance);
-  double y_max = local_result_y + ((mcl_wslow/mcl_wfast)*custom_local_range_distance);
-  double orien_min = local_result_orien - ((mcl_wslow/mcl_wfast)*custom_local_range_orien);
-  double orien_max = local_result_orien + ((mcl_wslow/mcl_wfast)*custom_local_range_orien);
-  if(x_min < -450)
-    x_min = -450.0;
-  if(x_max > 450)
-    x_max = 450.0;
-  if(y_min<-300)
-    y_min = -300.0;
-  if(y_max>300)
-    y_max = 300.0;
-  if(orien_min<-180)
-    orien_min = -180;
-  if(orien_max>180)
-    orien_max = 180;
-  std::uniform_real_distribution<double> cus_xrg(x_min,x_max), cus_yrg(y_min,y_max), cus_wrg(orien_min,orien_max);
-  new_list.push_back(std::make_tuple(cus_xrg(x_rd), cus_yrg(y_rd), cus_wrg(w_rd), 1/N_Particle));
-
-  return new_list
 }
 
 
