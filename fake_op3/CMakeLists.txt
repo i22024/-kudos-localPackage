@@ -49,7 +49,6 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate messages in the 'msg' folder
 add_message_files(
    FILES
-   Sound.msg
    kudos_vision_ball_position.msg
    kudos_vision_gcm.msg
    kudos_vision_head_pub.msg
