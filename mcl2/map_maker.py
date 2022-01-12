@@ -15,7 +15,7 @@ class map_maker():
         self.border = 100
         self.play_ground_width = 900
         self.play_ground_height = 600
-        self.map_width = 1100
+        self.map_width = 1100   # 왜 1100, 800 일까? -> mcl.cpp에서 field.rows와 field.cols가 1100과 800이라 그거에 맞춰준 것.
         self.map_height = 800
         self.linethickness = 5
         self.circle_size = 75
@@ -69,7 +69,8 @@ class map_maker():
             for col_index, col in enumerate(row):
                 if col == 255:
                     self.mcl_field[row_index, col_index, :] = line_color
-
+     
+    # mcl에서 구덩이 개념의 map을 만드는 함수 ( dist_map )
     def make_distance_map(self):
         out = 255 - self.basic_field.copy()
         self.dist_map = cv2.distanceTransform(out, cv2.DIST_L2, 0)
