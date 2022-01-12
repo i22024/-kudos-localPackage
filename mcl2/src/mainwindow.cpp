@@ -284,7 +284,7 @@ void MainWindow::setPosition(double pos_x, double pos_y)
 }
 
 // TODO: Explain
-/**
+/** updateRobotPose는 qwe asd로 로봇을 움직일 수 있게 해주는 코드이다.
  * @brief MainWindow::updateRobotPose
  * This function will move the robot around the fields.
  * This function also calculate the triangle area to represent the robot's FOV
